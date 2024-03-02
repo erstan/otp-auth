@@ -1,0 +1,262 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "OTP Auth API",
+    "description": "The OTP Auth API provides a server-side interface for generation and validation of OTPs. The authorization can be persisted on a client by issuing a JWT and storing it on the client.",
+    "license": {
+      "name": "MIT License",
+      "url": "https://opensource.org/license/mit"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://localhost:5000/api/v1"
+    }
+  ],
+  "paths": {
+    "/otp/generate": {
+      "put": {
+        "tags": [
+          "otp"
+        ],
+        "summary": "Generate an OTP",
+        "description": "Generate an OTP and email it to the user.",
+        "operationId": "generateOTP",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "abc@xyz.com"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OTP Creation Successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object", 
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "New OTP Generated"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "email": {
+                          "type": "string",
+                          "example": "abc@xyz.com"
+                        },
+                        "otp": {
+                          "type": "string",
+                          "default": "<redacted>"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/otp/validate": {
+      "get": {
+        "tags": [
+          "otp"
+        ],
+        "summary": "Validate an OTP",
+        "description": "Checks if the provided OTP is valid or not.",
+        "operationId": "validateOTP",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "abc@xyz.com"
+            },
+            "required": true
+          },
+          {
+            "name": "otp",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "123456"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OTP Validation Successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object", 
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Authorization successful"
+                    },
+                    "token": {
+                      "type": "string",
+                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImVyc2hkdG50cnlAZ21haWwuY29tIiwiaWF0IjoxNzA5MzY5NzkxLCJlzU3OTF9.HeYnX4t44CzLrKI4-4Yn4V1ZhU8nwH5Czh1RmbYnltQ"
+                    },
+                    "tokenType": {
+                      "type": "string",
+                      "default": "Bearer"
+                    },
+                    "expiresIn": {
+                      "type": "string",
+                      "example": "100m"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "OTP Validation Failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "default": "Unauthorized!"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/me": {
+      "get": {
+        "tags": [
+          "me"
+        ],
+        "summary": "Validate the JWT",
+        "description": "Returns the details of the token owner if the passed JWT is valid.",
+        "operationId": "getMe",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "schema": {
+              "type": "string",
+              "example": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImVyc2hkdG50cnlAZ21haWwuY29tIiwiaWF0IjoxNzA5MzY5NzkxLCJlzU3OTF9.HeYnX4t44CzLrKI4-4Yn4V1ZhU8nwH5Czh1RmbYnltQ"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Valid User Session",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object", 
+                  "properties": {
+                    "email": {
+                      "type": "string",
+                      "example": "abc@xyz.com"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid Token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "default": "Unauthorized to access this route"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "No auth header",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Protected route"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing bearer token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Bearer token missing"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+  }
+}
