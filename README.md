@@ -1,5 +1,7 @@
 # otp-auth
 
+**Documentation**: https://erstan.github.io/otp-auth/
+
 ### Environment variables 
 Specify the following environment variables in `config.env`
 ```
