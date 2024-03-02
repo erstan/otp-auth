@@ -6,7 +6,7 @@
 Specify the following environment variables in `config.env`
 ```
 MONGO_URI=<URI of your Mongo database>
-NODE_ENV=<development or productoin>
+NODE_ENV=<development or production>
 PORT=<Backend port>
 MAIL_USERNAME=<Service email for sending OTPs>
 MAIL_PASSWORD=<Service email account password>
